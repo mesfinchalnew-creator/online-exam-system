@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Page</title>
+</head>
+<body>
+    <h2>Online Examination</h2>
+    <form action="/submit" method="post">
+        {% for q in questions %}
+        <p>{{ q.id }}. {{ q.text }}</p>
+        <input type="radio" name="q{{ q.id }}" value="A"> {{ q.option_a }}<br>
+        <input type="radio" name="q{{ q.id }}" value="B"> {{ q.option_b }}<br>
+        <hr>
+        {% endfor %}
+        <button type="submit">Submit Exam</button>
+    </form>
+</body>
+</html>
