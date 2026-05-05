@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = "msc_online_exam_secret"
 
 # ያንተን External Database URL እዚህ ጋር በነጠላ ሰረዝ ውስጥ አስገባ
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://mesfin:x5xs9y1K2SlyfOezIcjun5wYfXYTOgBN@dpg-d7sq55d7vvec73c8grl0-a.oregon-postgres.render.com/exam_db_p2xo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://mesfin:x5xs9y1K2SlyfOezIcjun5wYfXYTOgBN@dpg-d7sq55d7vvec73c8grl0-a.oregon-postgres.render.com/exam_db_p2xo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
