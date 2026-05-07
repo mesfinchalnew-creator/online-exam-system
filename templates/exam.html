@@ -1,33 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Online Exam</title>
+    <title>Networking Exam</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
-        .exam-container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
-        .question { margin-bottom: 20px; }
-        button { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        body { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .exam-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 600px;
+            margin: 30px auto;
+        }
+        h2 { color: #2a5298; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .question { margin-bottom: 25px; background: #f9f9f9; padding: 15px; border-radius: 10px; }
+        .question p { font-weight: bold; margin-bottom: 10px; }
+        button {
+            background-color: #28a745;
+            border: none;
+            padding: 12px 30px;
+            color: white;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #218838; transform: scale(1.05); }
     </style>
 </head>
 <body>
     <div class="exam-container">
-        <h2>እንኳን ደህና መጣህ { { name } }!</h2>
-        <p>እባክህ የሚከተሉትን ጥያቄዎች መልስ፡</p>
+        <h2>Networking & Security Exam</h2>
+        <p>Welcome, <strong>{{ name }}</strong>!</p>
         
         <form action="/exam/{{ name }}" method="POST">
             <div class="question">
-                <p>1. የኢትዮጵያ ዋና ከተማ ማን ይባላል?</p>
-                <input type="radio" name="q1" value="A"> አዳማ <br>
-                <input type="radio" name="q1" value="B"> አዲስ አበባ <br>
+                <p>1. Which layer of the OSI model is responsible for routing (IP Addressing)?</p>
+                <input type="radio" name="q1" value="A"> Data Link Layer <br>
+                <input type="radio" name="q1" value="B"> Network Layer <br>
+                <input type="radio" name="q1" value="C"> Transport Layer
             </div>
             
             <div class="question">
-                <p>2. Arba Minch University የሚገኘው በየትኛው ክልል ነው?</p>
-                <input type="radio" name="q2" value="A"> ደቡብ ኢትዮጵያ <br>
-                <input type="radio" name="q2" value="B"> አማራ <br>
+                <p>2. What is the standard port number for the HTTP protocol?</p>
+                <input type="radio" name="q2" value="A"> 443 <br>
+                <input type="radio" name="q2" value="B"> 21 <br>
+                <input type="radio" name="q2" value="C"> 80
             </div>
 
-            <button type="submit">ፈተናውን ጨርስ (Submit)</button>
+            <div class="question">
+                <p>3. Which protocol provides secure, encrypted data transfer?</p>
+                <input type="radio" name="q3" value="A"> FTP <br>
+                <input type="radio" name="q3" value="B"> HTTPS <br>
+                <input type="radio" name="q3" value="C"> Telnet
+            </div>
+
+            <button type="submit">Submit Exam</button>
         </form>
     </div>
 </body>
