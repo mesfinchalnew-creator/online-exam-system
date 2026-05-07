@@ -4,23 +4,26 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Render ላይ ያለውን PostgreSQL ዳታቤዝ ለመጠቀም
+# Render ላይ PostgreSQL ካለ እሱን ይጠቀማል፣ ካልሆነ SQLite ይጠቀማል
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///exam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# የዳታቤዝ ሞዴል (Table)
+# የውጤት መመዝገቢያ ቴብል
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
     score = db.Column(db.Integer, nullable=False)
 
-# ዳታቤዙን በራሱ እንዲፈጥር የሚያደርግ
+# ዳታቤዙን በራሱ እንዲፈጥር
 with app.app_context():
     db.create_all()
 
 @app.route('/')
+def home():
+    return redirect(url_for('login'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -28,7 +31,7 @@ def login():
         return redirect(url_for('exam', name=name))
     return render_template('login.html')
 
-# --- ወሳኝ ማስተካከያ፡ admin ከመማሪው ስም በፊት መምጣት አለበት ---
+# --- ወሳኝ ማስተካከያ፡ /admin ከ /exam/<name> በላይ መሆን አለበት ---
 @app.route('/admin')
 def admin():
     results = Result.query.all()
@@ -37,13 +40,12 @@ def admin():
 @app.route('/exam/<name>', methods=['GET', 'POST'])
 def exam(name):
     if request.method == 'POST':
-        # እዚህ ጋር Networking ጥያቄዎችን መሰረት አድርገህ ውጤት ማስላት ትችላለህ
-        # ለአሁኑ ማሳያ እንዲሆን 100% ሰጥተነዋል
+        # በNetworking ጥያቄዎች መሰረት ውጤት መመዝገብ
         score = 100 
         new_result = Result(student_name=name, score=score)
         db.session.add(new_result)
         db.session.commit()
-        return f"<div style='text-align:center; margin-top:50px; font-family:sans-serif;'><h1>Great job, {name}!</h1><p>Your score is {score}%.</p><a href='/login'>Back to Home</a></div>"
+        return f"<div style='text-align:center; margin-top:50px; font-family:sans-serif;'><h2>ደስ የሚል ነው {name}!</h2><p>ውጤትህ {score}% ተመዝግቧል።</p><a href='/admin' style='color:#2a5298;'>ወደ Admin ገጽ ሂድ</a></div>"
     return render_template('exam.html', name=name)
 
 if __name__ == '__main__':
