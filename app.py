@@ -4,19 +4,17 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Render ላይ PostgreSQL ካለ ይጠቀማል፣ ካልሆነ SQLite ይጠቀማል
+
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///exam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# የውጤት መመዝገቢያ ሰንጠረዥ (Table)
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
     score = db.Column(db.Integer, nullable=False)
 
-# ዳታቤዙን በራሱ እንዲፈጥር
 with app.app_context():
     db.create_all()
 
@@ -31,7 +29,6 @@ def login():
         return redirect(url_for('exam', name=name))
     return render_template('login.html')
 
-# የአስተዳዳሪ ገጽ (ውጤቶች የሚታዩበት)
 @app.route('/admin')
 def admin():
     results = Result.query.all()
@@ -43,7 +40,6 @@ def exam(name):
         score = 0
         total_questions = 5
         
-        # ትክክለኛ መልሶች (በ exam.html ካሉት ጥያቄዎች ጋር የሚገጥሙ)
         # q1: Transport (B), q2: Forwarding (B), q3: DHCP (B), q4: Secure (B), q5: 192.168 (A)
         correct_answers = {
             'q1': 'B', 
@@ -53,18 +49,15 @@ def exam(name):
             'q5': 'A'
         }
         
-        # የተማሪውን መልስ ከትክክለኛው መልስ ጋር በማነፃፀር ውጤት ማስላት
-        for q_id, correct_val in correct_answers.items():
+                for q_id, correct_val in correct_answers.items():
             user_answer = request.form.get(q_id)
             if user_answer == correct_val:
                 score += 20  # ለእያንዳንዱ ትክክል መልስ 20 ነጥብ
         
-        # ውጤቱን ዳታቤዝ ውስጥ ማስቀመጥ
-        new_result = Result(student_name=name, score=score)
+               new_result = Result(student_name=name, score=score)
         db.session.add(new_result)
         db.session.commit()
         
-        # ውጤቱን ለተማሪው ማሳየት
         return f"""
         <div style='text-align:center; margin-top:100px; font-family:sans-serif; background-color:#f4f7f6; padding:50px;'>
             <div style='background:white; display:inline-block; padding:40px; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);'>
