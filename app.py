@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+# Render ላይ ያለውን PostgreSQL ዳታቤዝ ለመጠቀም
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///exam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -25,7 +27,9 @@ def login():
         name = request.form.get('username')
         return redirect(url_for('exam', name=name))
     return render_template('login.html')
---@app.route('/admin')
+
+# --- ወሳኝ ማስተካከያ፡ admin ከመማሪው ስም በፊት መምጣት አለበት ---
+@app.route('/admin')
 def admin():
     results = Result.query.all()
     return render_template('admin.html', results=results)
@@ -33,7 +37,9 @@ def admin():
 @app.route('/exam/<name>', methods=['GET', 'POST'])
 def exam(name):
     if request.method == 'POST':
-                score = 100 
+        # እዚህ ጋር Networking ጥያቄዎችን መሰረት አድርገህ ውጤት ማስላት ትችላለህ
+        # ለአሁኑ ማሳያ እንዲሆን 100% ሰጥተነዋል
+        score = 100 
         new_result = Result(student_name=name, score=score)
         db.session.add(new_result)
         db.session.commit()
