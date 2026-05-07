@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>AMU Student Online Exam System</title>
     <style>
         body { 
@@ -20,8 +21,8 @@
         .question p { font-weight: bold; margin-bottom: 10px; }
         button {
             background-color: #28a745; border: none; padding: 12px 35px;
-            color: white; font-size: 16px; border-radius: 25px;
-            cursor: pointer; transition: 0.3s; width: 100%;
+            color: white; font-size: 18px; border-radius: 25px;
+            cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold;
         }
         button:hover { background-color: #218838; transform: scale(1.02); }
     </style>
@@ -37,37 +38,37 @@
         <form action="/exam/{{ name }}" method="POST">
             <div class="question">
                 <p>1. Which OSI layer is responsible for end-to-end communication and error recovery?</p>
-                <input type="radio" name="q1" value="A"> Network Layer <br>
-                <input type="radio" name="bs" value="B"> Transport Layer <br>
-                <input type="radio" name="q1" value="C"> Physical Layer
+                <input type="radio" name="q1" value="A" required> Network Layer <br>
+                <input type="radio" name="q1" value="B" required> Transport Layer <br>
+                <input type="radio" name="q1" value="C" required> Physical Layer
             </div>
             
             <div class="question">
                 <p>2. What is the main purpose of a Router in a network?</p>
-                <input type="radio" name="q2" value="A"> Connecting devices within a single LAN <br>
-                <input type="radio" name="q2" value="B"> Forwarding data packets between different networks <br>
-                <input type="radio" name="q2" value="C"> Protecting the network from viruses
+                <input type="radio" name="q2" value="A" required> Connecting devices within a single LAN <br>
+                <input type="radio" name="q2" value="B" required> Forwarding data packets between different networks <br>
+                <input type="radio" name="q2" value="C" required> Protecting the network from viruses
             </div>
 
             <div class="question">
                 <p>3. Which protocol is used to assign IP addresses dynamically?</p>
-                <input type="radio" name="q3" value="A"> DNS <br>
-                <input type="radio" name="q3" value="B"> DHCP <br>
-                <input type="radio" name="q3" value="C"> FTP
+                <input type="radio" name="q3" value="A" required> DNS <br>
+                <input type="radio" name="q3" value="B" required> DHCP <br>
+                <input type="radio" name="q3" value="C" required> FTP
             </div>
 
             <div class="question">
                 <p>4. What does the "S" in HTTPS stand for?</p>
-                <input type="radio" name="q4" value="A"> Simple <br>
-                <input type="radio" name="q4" value="B"> Secure <br>
-                <input type="radio" name="q4" value="C"> Standard
+                <input type="radio" name="q4" value="A" required> Simple <br>
+                <input type="radio" name="q4" value="B" required> Secure <br>
+                <input type="radio" name="q4" value="C" required> Standard
             </div>
 
             <div class="question">
                 <p>5. Which of the following is a private IP address range?</p>
-                <input type="radio" name="q5" value="A"> 192.168.x.x <br>
-                <input type="radio" name="q5" value="B"> 8.8.8.8 <br>
-                <input type="radio" name="q5" value="C"> 172.217.x.x
+                <input type="radio" name="q5" value="A" required> 192.168.x.x <br>
+                <input type="radio" name="q5" value="B" required> 8.8.8.8 <br>
+                <input type="radio" name="q5" value="C" required> 172.217.x.x
             </div>
 
             <button type="submit">Submit My Answers</button>
