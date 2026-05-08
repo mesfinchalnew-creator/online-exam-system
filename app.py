@@ -5,13 +5,12 @@ import os
 app = Flask(__name__)
 app.secret_key = 'amu_final_2026'
 
-# Database Setup
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'exam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Question Table
+# --- Database Models ---
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(500))
@@ -21,26 +20,41 @@ class Question(db.Model):
     option_d = db.Column(db.String(200))
     correct_answer = db.Column(db.String(1))
 
-# Create DB and 10 Questions
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(50))
+
+# --- Database Initialization ---
 with app.app_context():
     db.create_all()
+    
+    # 5 ተማሪዎችን መፍጠር
+    if not Student.query.first():
+        students = [
+            Student(username='mesfin', password='123'),
+            Student(username='chere', password='123'),
+            Student(username='beza', password='123'),
+            Student(username='solomon', password='123'),
+            Student(username='abdi', password='123')
+        ]
+        db.session.bulk_save_objects(students)
+        db.session.commit()
+
+    # 6 የኔትዎርኪንግ ጥያቄዎችን መፍጠር
     if not Question.query.first():
         qs = [
-            Question(text="What is the 3rd layer of OSI?", option_a="Physical", option_b="Network", option_c="Session", option_d="Transport", correct_answer="B"),
-            Question(text="Which device works at Layer 2?", option_a="Hub", option_b="Router", option_c="Switch", option_d="Repeater", correct_answer="C"),
-            Question(text="Standard port for HTTPS?", option_a="80", option_b="21", option_c="443", option_d="25", correct_answer="C"),
-            Question(text="IPv4 address size?", option_a="32 bits", option_b="64 bits", option_c="128 bits", option_d="16 bits", correct_answer="A"),
-            Question(text="Which one is a Class C IP?", option_a="10.0.0.1", option_b="172.16.0.1", option_c="192.168.1.1", option_d="8.8.8.8", correct_answer="C"),
-            Question(text="Which protocol is for Email sending?", option_a="POP3", option_b="SMTP", option_c="HTTP", option_d="FTP", correct_answer="B"),
-            Question(text="Full form of LAN?", option_a="Local Area Net", option_b="Local Access Network", option_c="Local Area Network", option_d="Large Area Network", correct_answer="C"),
-            Question(text="Which layer provides encryption?", option_a="Application", option_b="Presentation", option_c="Session", option_d="Transport", correct_answer="B"),
-            Question(text="MAC address size?", option_a="32 bits", option_b="48 bits", option_c="64 bits", option_d="128 bits", correct_answer="B"),
-            Question(text="Which command tests connectivity?", option_a="ipconfig", option_b="tracert", option_c="ping", option_d="netstat", correct_answer="C")
+            Question(text="Which layer is responsible for routing?", option_a="Data Link", option_b="Network", option_c="Transport", option_d="Physical", correct_answer="B"),
+            Question(text="What is the port number for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
+            Question(text="Which device connects different networks?", option_a="Switch", option_b="Hub", option_c="Bridge", option_d="Router", correct_answer="D"),
+            Question(text="IPv4 addresses are how many bits long?", option_a="16", option_b="32", option_c="64", option_d="128", correct_answer="B"),
+            Question(text="Which protocol is used to assign IP addresses automatically?", option_a="DNS", option_b="DHCP", option_c="FTP", option_d="SMTP", correct_answer="B"),
+            Question(text="What is the 1st layer of the OSI model?", option_a="Physical", option_b="Data Link", option_c="Network", option_d="Application", correct_answer="A")
         ]
         db.session.bulk_save_objects(qs)
         db.session.commit()
 
-# --- ROUTES ---
+# --- Routes ---
 
 @app.route('/')
 def index():
@@ -48,11 +62,13 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    u, p = request.form.get('username'), request.form.get('password')
-    if u == 'mesfin' and p == '123':
+    u = request.form.get('username')
+    p = request.form.get('password')
+    student = Student.query.filter_by(username=u, password=p).first()
+    if student:
         session['user'] = u
         return redirect(url_for('exam'))
-    return "Wrong! <a href='/'>Back</a>"
+    return "Invalid Credentials! <a href='/'>Try again</a>"
 
 @app.route('/exam')
 def exam():
@@ -64,19 +80,18 @@ def submit():
     if 'user' not in session: return redirect(url_for('index'))
     questions = Question.query.all()
     score = sum(1 for q in questions if request.form.get(str(q.id)) == q.correct_answer)
-    return render_template('result.html', score=score, total=len(questions), percentage=(score/len(questions))*100)
+    total = len(questions)
+    return render_template('result.html', score=score, total=total, percentage=(score/total)*100)
 
 @app.route('/admin')
 def admin():
     if 'user' not in session: return redirect(url_for('index'))
     return render_template('admin.html', questions=Question.query.all())
 
-# ********* የ LOGOUT ቦታ እዚህ ጋር ነው *********
 @app.route('/logout')
 def logout():
-    session.pop('user', None) # የተጠቃሚውን መረጃ ያስወግዳል
-    return redirect(url_for('index')) # ወደ Login ገጽ ይመልሰዋል
-# *******************************************
+    session.pop('user', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
