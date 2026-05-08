@@ -8,13 +8,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# የተጠቃሚ ሞዴል (User Model)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
-# የውጤት ሞዴል (Result Model)
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
@@ -22,8 +20,7 @@ class Result(db.Model):
 
 with app.app_context():
     db.create_all()
-    # ለመጀመሪያ ጊዜ መፈተኛ የሚሆን ተጠቃሚ መፍጠር (ካለ አይፈጥረውም)
-    if not User.query.filter_by(username='mesfin').first():
+        if not User.query.filter_by(username='mesfin').first():
         test_user = User(username='mesfin', password='123')
         db.session.add(test_user)
         db.session.commit()
@@ -38,11 +35,9 @@ def login():
         name = request.form.get('username')
         pwd = request.form.get('password')
         
-        # ተጠቃሚውን መፈለግ
-        user = User.query.filter_by(username=name).first()
+               user = User.query.filter_by(username=name).first()
         
-        # ስምና ፓስወርድ ትክክል መሆኑን ማረጋገጥ
-        if user and user.password == pwd:
+               if user and user.password == pwd:
             return redirect(url_for('exam', name=name))
         else:
             return "<h3 style='color:red; text-align:center;'>Invalid Username or Password!</h3><a href='/login'>Try Again</a>"
