@@ -71,19 +71,24 @@ def exam():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    if 'user' not in session: return redirect(url_for('index'))
+    if 'user' not in session: 
+        return redirect(url_for('index'))
+        
     questions = Question.query.all()
+    # የተማሪውን መልስ ቼክ ያደርጋል
     score = sum(1 for q in questions if request.form.get(str(q.id)) == q.correct_answer)
     total = len(questions)
-    percent = (score/total)*100
-    
-    # አዲስ፡ ውጤቱን ዳታቤዝ ውስጥ መመዝገብ
-    new_result = Result(username=session['user'], score=score, total=total, percentage=percent)
+
+    # 1. ቁጥሩን ለማሳጠር (Round ለማድረግ) እዚህ ጋር ነው የምትቀይረው
+    percentage = round((score / total) * 100, 2) 
+
+    # 2. ውጤቱን ለአድሚን ገጽ እንዲመዘገብ ያደርጋል
+    new_result = Result(username=session['user'], score=score, total=total, percentage=percentage)
     db.session.add(new_result)
     db.session.commit()
-    
-    return render_template('result.html', score=score, total=total, percentage=percent)
 
+    # 3. ወደ ውጤት ማሳያ ገጽ ይወስደዋል
+    return render_template('result.html', score=score, total=total, percentage=percentage)
 @app.route('/admin')
 def admin():
     if 'user' not in session: return redirect(url_for('index'))
