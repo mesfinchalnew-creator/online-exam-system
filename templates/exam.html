@@ -1,56 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AMU Online Exam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMU Online Exam - Faculty of Computing</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { background: #f4f7f6; font-family: sans-serif; padding: 20px; }
-        .container { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .question { margin-bottom: 20px; padding: 15px; border-left: 5px solid #2a5298; background: #fafafa; }
-        button { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 18px; }
+        body { background-color: #f8f9fa; }
+        .exam-container { max-width: 800px; margin-top: 50px; }
+        .card { border: none; border-radius: 15px; }
+        .question-text { font-weight: 600; font-size: 1.1rem; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Welcome, {{ name }}!</h2>
-        <form action="/exam/{{ name }}" method="POST">
-            <div class="question">
-                <p>1. Which OSI layer is responsible for end-to-end communication?</p>
-                <input type="radio" name="q1" value="A" required> Network Layer <br>
-                <input type="radio" name="q1" value="B" required> Transport Layer <br>
-                <input type="radio" name="q1" value="C" required> Physical Layer
-            </div>
 
-            <div class="question">
-                <p>2. What is the main purpose of a Router?</p>
-                <input type="radio" name="q2" value="A" required> LAN Connection <br>
-                <input type="radio" name="q2" value="B" required> Forwarding packets <br>
-                <input type="radio" name="q2" value="C" required> Storage
-            </div>
-
-            <div class="question">
-                <p>3. Which protocol assigns IP addresses dynamically?</p>
-                <input type="radio" name="q3" value="A" required> DNS <br>
-                <input type="radio" name="q3" value="B" required> DHCP <br>
-                <input type="radio" name="q3" value="C" required> HTTP
-            </div>
-
-            <div class="question">
-                <p>4. What does "S" in HTTPS stand for?</p>
-                <input type="radio" name="q4" value="A" required> Simple <br>
-                <input type="radio" name="q4" value="B" required> Secure <br>
-                <input type="radio" name="q4" value="C" required> Speed
-            </div>
-
-            <div class="question">
-                <p>5. Which is a private IP address range?</p>
-                <input type="radio" name="q5" value="A" required> 192.168.x.x <br>
-                <input type="radio" name="q5" value="B" required> 8.8.8.8 <br>
-                <input type="radio" name="q5" value="C" required> 1.1.1.1
-            </div>
-
-            <button type="submit">Submit Exam</button>
-        </form>
+<div class="container exam-container">
+    <div class="text-center mb-5">
+        <h2 class="text-primary fw-bold">Arba Minch University</h2>
+        <p class="text-muted">Faculty of Computing and Software Engineering</p>
+        <hr>
     </div>
+
+    <form action="/submit" method="POST">
+        {% for q in questions %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-4">
+                <p class="question-text text-dark">{{ loop.index }}. {{ q.text }}</p>
+                
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="{{ q.id }}" id="q{{ q.id }}a" value="A" required>
+                    <label class="form-check-label" for="q{{ q.id }}a">{{ q.option_a }}</label>
+                </div>
+                
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="{{ q.id }}" id="q{{ q.id }}b" value="B">
+                    <label class="form-check-label" for="q{{ q.id }}b">{{ q.option_b }}</label>
+                </div>
+                
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="{{ q.id }}" id="q{{ q.id }}c" value="C">
+                    <label class="form-check-label" for="q{{ q.id }}c">{{ q.option_c }}</label>
+                </div>
+                
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="{{ q.id }}" id="q{{ q.id }}d" value="D">
+                    <label class="form-check-label" for="q{{ q.id }}d">{{ q.option_d }}</label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-primary btn-lg px-5 shadow">Submit Exam</button>
+        </div>
+    </form>
+</div>
+
+<footer class="text-center py-4 text-muted">
+    <small>&copy; 2026 Arba Minch University - Online Exam System</small>
+</footer>
+
 </body>
 </html>
