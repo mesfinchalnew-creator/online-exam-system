@@ -78,7 +78,7 @@ def submit():
 def admin():
     if 'user' not in session:
         return redirect(url_for('index'))
-    # ሁሉንም ጥያቄዎች ከአድሚን ገጽ ላይ ለማየት
+    
     questions = Question.query.all()
     return render_template('admin.html', questions=questions)
 
