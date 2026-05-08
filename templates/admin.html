@@ -1,37 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel - Exam Questions</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Question Management System</h2>
-        <div class="card shadow">
+        <h2 class="text-center text-primary mb-4">Admin Management System</h2>
+        
+        <div class="card shadow mb-5">
+            <div class="card-header bg-success text-white"><h5>Student Exam Results</h5></div>
             <div class="card-body">
-                <table class="table table-hover">
-                    <thead class="table-dark">
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Question Text</th>
-                            <th>Correct Answer</th>
+                            <th>Student Name</th>
+                            <th>Score</th>
+                            <th>Percentage</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for q in questions %}
+                        {% for r in results %}
                         <tr>
-                            <td>{{ q.id }}</td>
-                            <td>{{ q.text }}</td>
-                            <td><span class="badge bg-success">{{ q.correct_answer }}</span></td>
+                            <td class="fw-bold">{{ r.username }}</td>
+                            <td>{{ r.score }} / {{ r.total }}</td>
+                            <td><span class="badge bg-primary">{{ r.percentage }}%</span></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <div class="text-center mt-4">
-                    <a href="/exam" class="btn btn-secondary">Go to Exam Page</a>
-                </div>
             </div>
         </div>
+
+        <div class="card shadow mb-5">
+            <div class="card-header bg-dark text-white"><h5>Question List</h5></div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr><th>ID</th><th>Question</th><th>Answer</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for q in questions %}
+                        <tr><td>{{ q.id }}</td><td>{{ q.text }}</td><td>{{ q.correct_answer }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="text-center pb-5"><a href="/exam" class="btn btn-secondary">Back to Exam</a></div>
     </div>
 </body>
 </html>
