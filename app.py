@@ -1,15 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 app.secret_key = 'amu_secret_key'
 
 # Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam.db'
+# Render ላይ ዳታቤዙ እንዲሰራ እንዲህ መጻፍ ይሻላል
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'exam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Question Model (Database Schema)
+# Question Model
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(500))
@@ -19,7 +22,7 @@ class Question(db.Model):
     option_d = db.Column(db.String(200))
     correct_answer = db.Column(db.String(1))
 
-# Create Database and Sample Questions
+# Database መፍጠርና ጥያቄዎችን መሙላት
 with app.app_context():
     db.create_all()
     if not Question.query.first():
@@ -43,7 +46,6 @@ def index():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    # ቀላል Authentication (ለመምህሩ ለማሳየት)
     if username == 'mesfin' and password == '123':
         session['user'] = username
         return redirect(url_for('exam'))
@@ -73,12 +75,11 @@ def submit():
     percentage = (score / total) * 100
     return render_template('result.html', score=score, total=total, percentage=percentage)
 
-# --- አዲስ የተጨመረው የአድሚን ገጽ ---
+# የአድሚን ገጽ
 @app.route('/admin')
 def admin():
     if 'user' not in session:
         return redirect(url_for('index'))
-    
     questions = Question.query.all()
     return render_template('admin.html', questions=questions)
 
@@ -88,5 +89,6 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # Codeanywhere ላይ እንዲሰራ host '0.0.0.0' መሆን አለበት
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Render ላይ እንዲሰራ host '0.0.0.0' እና port ከ environment መውሰድ አለበት
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
