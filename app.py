@@ -3,16 +3,18 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.secret_key = 'amu_secret_key' 
+app.secret_key = 'amu_secret_key' # ለ Flash መልእክቶች አስፈላጊ ነው
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///exam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# የተጠቃሚ ሞዴል (User Model)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
+# የውጤት ሞዴል (Result Model)
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
@@ -20,7 +22,8 @@ class Result(db.Model):
 
 with app.app_context():
     db.create_all()
-        if not User.query.filter_by(username='mesfin').first():
+    # ለመጀመሪያ ጊዜ መፈተኛ የሚሆን ተጠቃሚ መፍጠር (ካለ አይፈጥረውም)
+    if not User.query.filter_by(username='mesfin').first():
         test_user = User(username='mesfin', password='123')
         db.session.add(test_user)
         db.session.commit()
@@ -35,9 +38,11 @@ def login():
         name = request.form.get('username')
         pwd = request.form.get('password')
         
-               user = User.query.filter_by(username=name).first()
+        # ተጠቃሚውን መፈለግ
+        user = User.query.filter_by(username=name).first()
         
-               if user and user.password == pwd:
+        # ስምና ፓስወርድ ትክክል መሆኑን ማረጋገጥ
+        if user and user.password == pwd:
             return redirect(url_for('exam', name=name))
         else:
             return "<h3 style='color:red; text-align:center;'>Invalid Username or Password!</h3><a href='/login'>Try Again</a>"
