@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'ex
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- Database Models ---
+# --- ዳታቤዝ ሞዴሎች ---
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(500))
@@ -25,23 +25,21 @@ class Student(db.Model):
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(50))
 
-# --- Database Initialization ---
+# አዲስ፡ ውጤት መመዝገቢያ
+class Result(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    score = db.Column(db.Integer)
+    total = db.Column(db.Integer)
+    percentage = db.Column(db.Float)
+
 with app.app_context():
     db.create_all()
-    
-    # 5 ተማሪዎችን መፍጠር
     if not Student.query.first():
-        students = [
-            Student(username='mesfin', password='123'),
-            Student(username='chere', password='123'),
-            Student(username='beza', password='123'),
-            Student(username='solomon', password='123'),
-            Student(username='abdi', password='123')
-        ]
+        students = [Student(username=u, password='123') for u in ['mesfin', 'chere', 'beza', 'solomon', 'abdi']]
         db.session.bulk_save_objects(students)
         db.session.commit()
 
-    # 6 የኔትዎርኪንግ ጥያቄዎችን መፍጠር
     if not Question.query.first():
         qs = [
             Question(text="Which layer is responsible for routing?", option_a="Data Link", option_b="Network", option_c="Transport", option_d="Physical", correct_answer="B"),
@@ -54,21 +52,17 @@ with app.app_context():
         db.session.bulk_save_objects(qs)
         db.session.commit()
 
-# --- Routes ---
-
 @app.route('/')
-def index():
-    return render_template('login.html')
+def index(): return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
-    u = request.form.get('username')
-    p = request.form.get('password')
+    u, p = request.form.get('username'), request.form.get('password')
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
         session['user'] = u
         return redirect(url_for('exam'))
-    return "Invalid Credentials! <a href='/'>Try again</a>"
+    return "Invalid! <a href='/'>Try again</a>"
 
 @app.route('/exam')
 def exam():
@@ -81,12 +75,21 @@ def submit():
     questions = Question.query.all()
     score = sum(1 for q in questions if request.form.get(str(q.id)) == q.correct_answer)
     total = len(questions)
-    return render_template('result.html', score=score, total=total, percentage=(score/total)*100)
+    percent = (score/total)*100
+    
+    # አዲስ፡ ውጤቱን ዳታቤዝ ውስጥ መመዝገብ
+    new_result = Result(username=session['user'], score=score, total=total, percentage=percent)
+    db.session.add(new_result)
+    db.session.commit()
+    
+    return render_template('result.html', score=score, total=total, percentage=percent)
 
 @app.route('/admin')
 def admin():
     if 'user' not in session: return redirect(url_for('index'))
-    return render_template('admin.html', questions=Question.query.all())
+    questions = Question.query.all()
+    results = Result.query.all() # ሁሉንም የተማሪ ውጤቶች ያመጣል
+    return render_template('admin.html', questions=questions, results=results)
 
 @app.route('/logout')
 def logout():
@@ -94,5 +97,4 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
