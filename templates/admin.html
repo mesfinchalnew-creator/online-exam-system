@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 40px; }
-        .admin-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
-        h1 { color: #1e3c72; text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
-        th { background-color: #2a5298; color: white; }
-        tr:hover { background-color: #f1f1f1; }
-    </style>
+    <title>Admin Panel - Exam Questions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <div class="admin-container">
-        <h1>student exam result</h1>
-        <table>
-            <tr>
-                <th>role number</th>
-                <th>student name</th>
-                <th>Recorded results</th>
-            </tr>
-            {% for result in results %}
-            <tr>
-                <td>{{ result.id }}</td>
-                <td>{{ result.student_name }}</td>
-                <td><strong style="color: green;">{{ result.score }}%</strong></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <br>
-        <a href="/login" style="text-decoration: none; color: #2a5298;">← ወደ ሎጊን ተመለስ</a>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Question Management System</h2>
+        <div class="card shadow">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Question Text</th>
+                            <th>Correct Answer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q in questions %}
+                        <tr>
+                            <td>{{ q.id }}</td>
+                            <td>{{ q.text }}</td>
+                            <td><span class="badge bg-success">{{ q.correct_answer }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="text-center mt-4">
+                    <a href="/exam" class="btn btn-secondary">Go to Exam Page</a>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
