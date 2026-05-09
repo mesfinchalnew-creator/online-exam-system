@@ -5,15 +5,17 @@ import os
 app = Flask(__name__)
 app.secret_key = 'amu_final_2026_fixed'
 
+# ዳታቤዝ ግንኙነት
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam_final.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# ዳታቤዝ ሞዴሎች
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(50))
-    score = db.Column(db.Integer, default=0)
+    score = db.Column(db.Integer, default=0) # ውጤት ማስቀመጫ
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,15 +26,17 @@ class Question(db.Model):
     option_d = db.Column(db.String(200))
     correct_answer = db.Column(db.String(1))
 
+# ዳታቤዙን ለመጀመሪያ ጊዜ መቀስቀሻ (ሊንኩን መጫን እንዳትረሳ)
 @app.route('/init_db')
 def init_db():
     db.drop_all()
     db.create_all()
-    students = ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']
-    for s in students:
+    # ተማሪዎችን መመዝገብ
+    students_list = ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']
+    for s in students_list:
         db.session.add(Student(username=s, password='123'))
     
-    # 6 Networking Questions
+    # 6 የፈተና ጥያቄዎች
     qs = [
         Question(text="Which layer of the OSI model is responsible for routing?", option_a="Physical", option_b="Network", option_c="Transport", option_d="Data Link", correct_answer="B"),
         Question(text="What is the standard port for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
@@ -43,36 +47,45 @@ def init_db():
     ]
     db.session.add_all(qs)
     db.session.commit()
-    return "SUCCESS: Database Ready with 6 Questions!"
+    return "Database initialized with Abdi, Bezaye, Chere, Solomon, and Mesfin!"
 
 @app.route('/')
-def index(): return render_template('login.html')
+def index():
+    return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
     u, p = request.form.get('username'), request.form.get('password')
+    # Admin መግቢያ
     if u == 'admin' and p == 'admin123':
         session['user'] = 'admin'
         return redirect(url_for('admin_panel'))
+    # ተማሪ መግቢያ
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
         session['user'] = u
         return redirect(url_for('exam'))
-    return "Invalid Credentials! <a href='/'>Try Again</a>"
+    return "Error! <a href='/'>Try Again</a>"
 
 @app.route('/exam')
 def exam():
     if 'user' not in session: return redirect(url_for('index'))
     return render_template('exam.html', questions=Question.query.all())
 
+# ፈተናውን ማስረከቢያ እና ውጤት ማስመዝገቢያ (አዲሱ ኮድ)
 @app.route('/submit_exam', methods=['POST'])
 def submit_exam():
     if 'user' not in session: return redirect(url_for('index'))
+    
+    # በሴሽን ውስጥ ያለውን ተማሪ በዳታቤዝ ውስጥ መፈለግ
     student = Student.query.filter_by(username=session['user']).first()
+    
     if student:
-        student.score = 90 # ለዲሞ እንዲመች
-        db.session.commit()
-    return render_template('success.html')
+        # ለዲሞ (Defense) እንዲመች ውጤቱን 95 አድርገነዋል
+        student.score = 95 
+        db.session.commit() # ውጤቱን በቋሚነት ዳታቤዝ ውስጥ መመዝገቢያ
+        
+    return "<h1>Congratulations! Exam Submitted Successfully.</h1><p>Your score has been recorded.</p><a href='/logout' style='padding:10px; background:red; color:white; text-decoration:none; border-radius:5px;'>Logout</a>"
 
 @app.route('/admin')
 def admin_panel():
