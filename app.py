@@ -3,14 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-app.secret_key = 'amu_final_fixed_2026'
+app.secret_key = 'amu_exam_final_2026'
 
-# ዳታቤዝ ግንኙነት
+# ዳታቤዝ ግንኙነት - SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam_final.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# ሞዴሎች
+# የዳታቤዝ ሰንጠረዦች
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
@@ -25,7 +25,7 @@ class Question(db.Model):
     option_d = db.Column(db.String(200))
     correct_answer = db.Column(db.String(1))
 
-# ዳታቤዝ መቀስቀሻ (ይህንን የግድ መጫን አለብህ)
+# ዳታቤዙን እና ጥያቄዎቹን ለመፍጠር
 @app.route('/init_db')
 def init_db():
     db.drop_all()
@@ -37,7 +37,7 @@ def init_db():
         new_s = Student(username=s, password='123')
         db.session.add(new_s)
     
-    # 6 የተሟሉ ጥያቄዎች
+    # 6 ጥያቄዎች
     qs = [
         Question(text="Which layer of the OSI model is responsible for routing?", option_a="Physical", option_b="Network", option_c="Transport", option_d="Data Link", correct_answer="B"),
         Question(text="What is the standard port for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
@@ -48,24 +48,32 @@ def init_db():
     ]
     db.session.add_all(qs)
     db.session.commit()
-    return "SUCCESS: Database Fixed with 6 Full Questions!"
+    return "SUCCESS: Database Ready for Presentation!"
 
 @app.route('/')
-def index(): return render_template('login.html')
+def index():
+    return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
-    u, p = request.form.get('username'), request.form.get('password')
+    u = request.form.get('username')
+    p = request.form.get('password')
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
         session['user'] = u
-        return redirect(url_for('exam'))
-    return "Error! <a href='/'>Try Again</a>"
+        return redirect(url_for('exam')) # በቀጥታ ወደ ፈተናው ይሄዳል
+    return "Invalid Credentials! <a href='/'>Try Again</a>"
 
 @app.route('/exam')
 def exam():
     if 'user' not in session: return redirect(url_for('index'))
     return render_template('exam.html', questions=Question.query.all())
+
+# ፈተናውን ለመጨረስ
+@app.route('/submit_exam', methods=['POST'])
+def submit_exam():
+    if 'user' not in session: return redirect(url_for('index'))
+    return "<h1>Congratulations! Your exam has been submitted successfully.</h1><a href='/'>Logout</a>"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
