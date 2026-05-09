@@ -11,7 +11,7 @@ app.secret_key = 'amu_final_2026'
 
 # --- ዳታቤዝ ግንኙነት (Render PostgreSQL) ---
 # ምስሉ ላይ ያለውን External URL እዚህ ጋር ተክቼዋለሁ
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://mesfin:x5xs9y1K2SlyfOezIcjun5wYfXYTOgBN@dpg-d7sq55d7vvec73c8grl0-a.oregon-postgres.render.com/exam_system_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
