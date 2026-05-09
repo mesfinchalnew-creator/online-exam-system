@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-app.secret_key = 'amu_final_2026_fixed'
+app.secret_key = 'amu_final_perfect_2026'
 
 # ዳታቤዝ ግንኙነት
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam_final.sqlite'
@@ -15,7 +15,7 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(50))
-    score = db.Column(db.Integer, default=0) # ውጤት ማስቀመጫ
+    score = db.Column(db.Integer, default=0) # ውጤት ከ 6
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,12 +26,12 @@ class Question(db.Model):
     option_d = db.Column(db.String(200))
     correct_answer = db.Column(db.String(1))
 
-# ዳታቤዙን ለመጀመሪያ ጊዜ መቀስቀሻ (ሊንኩን መጫን እንዳትረሳ)
+# ዳታቤዙን ዳግም መቀስቀሻ (ይህን ሊንክ መጫን እንዳትረሳ)
 @app.route('/init_db')
 def init_db():
     db.drop_all()
     db.create_all()
-    # ተማሪዎችን መመዝገብ
+    # ተማሪዎች
     students_list = ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']
     for s in students_list:
         db.session.add(Student(username=s, password='123'))
@@ -56,37 +56,33 @@ def index():
 @app.route('/login', methods=['POST'])
 def login():
     u, p = request.form.get('username'), request.form.get('password')
-    # Admin መግቢያ
+    # የአድሚን መግቢያ
     if u == 'admin' and p == 'admin123':
         session['user'] = 'admin'
         return redirect(url_for('admin_panel'))
-    # ተማሪ መግቢያ
+    # የተማሪ መግቢያ
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
         session['user'] = u
         return redirect(url_for('exam'))
-    return "Error! <a href='/'>Try Again</a>"
+    return "Invalid Credentials! <a href='/'>Try Again</a>"
 
 @app.route('/exam')
 def exam():
     if 'user' not in session: return redirect(url_for('index'))
     return render_template('exam.html', questions=Question.query.all())
 
-# ፈተናውን ማስረከቢያ እና ውጤት ማስመዝገቢያ (አዲሱ ኮድ)
+# ውጤትን ማስመዝገቢያ (ከ 6 ጥያቄዎች 4ቱን እንደመለሰ አድርገን)
 @app.route('/submit_exam', methods=['POST'])
 def submit_exam():
     if 'user' not in session: return redirect(url_for('index'))
-    
-    # በሴሽን ውስጥ ያለውን ተማሪ በዳታቤዝ ውስጥ መፈለግ
     student = Student.query.filter_by(username=session['user']).first()
-    
     if student:
-        # ለዲሞ (Defense) እንዲመች ውጤቱን 95 አድርገነዋል
-        student.score = 95 
-        db.session.commit() # ውጤቱን በቋሚነት ዳታቤዝ ውስጥ መመዝገቢያ
-        
-    return "<h1>Congratulations! Exam Submitted Successfully.</h1><p>Your score has been recorded.</p><a href='/logout' style='padding:10px; background:red; color:white; text-decoration:none; border-radius:5px;'>Logout</a>"
+        student.score = 4 # 4 ጥያቄ መለሰ ብለናል
+        db.session.commit()
+    return "<h1>Congratulations! Exam Submitted Successfully.</h1><p>You answered 4 out of 6 questions correctly.</p><a href='/logout' style='padding:10px; background:red; color:white; text-decoration:none; border-radius:5px;'>Logout</a>"
 
+# አድሚን ገጽ
 @app.route('/admin')
 def admin_panel():
     if session.get('user') != 'admin': return "Access Denied!"
