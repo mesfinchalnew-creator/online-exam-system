@@ -43,7 +43,7 @@ with app.app_context():
     db.create_all()
     if not Student.query.first():
         # እዚህ ጋር ለተማሪዎቹ የ 2FA ሚስጥር (MFA Secret) አብሮ ይፈጠራል
-        students = [Student(username=u, password='123', mfa_secret=pyotp.random_base32()) for u in ['mesfin', 'chere', 'solomon', 'abdi']]
+        students = [Student(username=u, password='123', mfa_secret=pyotp.random_base32()) for u in ['mesfin', 'chere', 'solomon', 'abdi''beza']]
         db.session.bulk_save_objects(students)
         db.session.commit()
 
