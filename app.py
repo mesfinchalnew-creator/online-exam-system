@@ -1,12 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
+import pyotp
+import qrcode
+import io
+import base64
 
 app = Flask(__name__)
 app.secret_key = 'amu_final_2026'
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'exam.db')
+# --- ዳታቤዝ ግንኙነት (Render PostgreSQL) ---
+# ምስሉ ላይ ያለውን External URL እዚህ ጋር ተክቼዋለሁ
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://mesfin:x5xs9y1K2SlyfOezIcjun5wYfXYTOgBN@dpg-d7sq55d7vvec73c8grl0-a.oregon-postgres.render.com/exam_system_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -24,8 +29,8 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(50))
+    mfa_secret = db.Column(db.String(32)) # ለ 2FA የሚሆን ሚስጥር
 
-# አዲስ፡ ውጤት መመዝገቢያ
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
@@ -33,10 +38,12 @@ class Result(db.Model):
     total = db.Column(db.Integer)
     percentage = db.Column(db.Float)
 
+# ዳታቤዝ መፍጠር እና የመጀመሪያ ዳታ ማስገባት
 with app.app_context():
     db.create_all()
     if not Student.query.first():
-        students = [Student(username=u, password='123') for u in ['mesfin', 'chere', 'beza', 'solomon', 'abdi']]
+        # እዚህ ጋር ለተማሪዎቹ የ 2FA ሚስጥር (MFA Secret) አብሮ ይፈጠራል
+        students = [Student(username=u, password='123', mfa_secret=pyotp.random_base32()) for u in ['mesfin', 'chere', 'solomon', 'abdi']]
         db.session.bulk_save_objects(students)
         db.session.commit()
 
@@ -52,17 +59,49 @@ with app.app_context():
         db.session.bulk_save_objects(qs)
         db.session.commit()
 
+# --- Routes ---
+
 @app.route('/')
 def index(): return render_template('login.html')
+
+# 1. አዲስ፡ ለተማሪው QR Code ማሳያ ገጽ
+@app.route('/setup_2fa/<username>')
+def setup_2fa(username):
+    student = Student.query.filter_by(username=username).first()
+    if not student: return "ተማሪው አልተገኘም"
+    
+    uri = pyotp.totp.TOTP(student.mfa_secret).provisioning_uri(name=username, issuer_name="AMU_Exam_Security")
+    img = qrcode.make(uri)
+    buf = io.BytesIO()
+    img.save(buf)
+    qr_b64 = base64.b64encode(buf.getvalue()).decode()
+    return render_template('setup.html', qr_image=qr_b64, username=username)
 
 @app.route('/login', methods=['POST'])
 def login():
     u, p = request.form.get('username'), request.form.get('password')
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
-        session['user'] = u
-        return redirect(url_for('exam'))
+        session['temp_user'] = u # ለጊዜው ተጠቃሚውን መመዝገብ
+        return redirect(url_for('verify_otp')) # ወደ 2FA ማረጋገጫ ይሄዳል
     return "Invalid! <a href='/'>Try again</a>"
+
+# 2. አዲስ፡ የ 2FA ኮድ ማረጋገጫ ገጽ
+@app.route('/verify_otp', methods=['GET', 'POST'])
+def verify_otp():
+    if 'temp_user' not in session: return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        otp = request.form.get('otp')
+        student = Student.query.filter_by(username=session['temp_user']).first()
+        totp = pyotp.totp.TOTP(student.mfa_secret)
+        
+        if totp.verify(otp):
+            session['user'] = session.pop('temp_user')
+            return redirect(url_for('exam'))
+        return "የተሳሳተ ኮድ! <a href='/verify_otp'>እንደገና ይሞክሩ</a>"
+    
+    return render_template('verify.html')
 
 @app.route('/exam')
 def exam():
@@ -71,30 +110,22 @@ def exam():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    if 'user' not in session: 
-        return redirect(url_for('index'))
-        
+    if 'user' not in session: return redirect(url_for('index'))
     questions = Question.query.all()
-    # የተማሪውን መልስ ቼክ ያደርጋል
     score = sum(1 for q in questions if request.form.get(str(q.id)) == q.correct_answer)
     total = len(questions)
-
-    # 1. ቁጥሩን ለማሳጠር (Round ለማድረግ) እዚህ ጋር ነው የምትቀይረው
     percentage = round((score / total) * 100, 2) 
 
-    # 2. ውጤቱን ለአድሚን ገጽ እንዲመዘገብ ያደርጋል
     new_result = Result(username=session['user'], score=score, total=total, percentage=percentage)
     db.session.add(new_result)
     db.session.commit()
-
-    # 3. ወደ ውጤት ማሳያ ገጽ ይወስደዋል
     return render_template('result.html', score=score, total=total, percentage=percentage)
+
 @app.route('/admin')
 def admin():
     if 'user' not in session: return redirect(url_for('index'))
-    questions = Question.query.all()
-    results = Result.query.all() # ሁሉንም የተማሪ ውጤቶች ያመጣል
-    return render_template('admin.html', questions=questions, results=results)
+    results = Result.query.all()
+    return render_template('admin.html', results=results)
 
 @app.route('/logout')
 def logout():
