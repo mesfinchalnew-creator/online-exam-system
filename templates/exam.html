@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AMU Online Exam</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam - AMU</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; background: white; padding: 30px; border-radius: 10px; margin: auto; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        .question { margin-bottom: 25px; padding: 15px; border-bottom: 1px solid #eee; }
+        .options { margin-top: 10px; }
+        label { display: block; margin-bottom: 8px; cursor: pointer; }
+        button { background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background-color: #218838; }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5" style="max-width: 800px;">
-    <h2 class="text-center text-primary mb-4">Network & Security Exam</h2>
-    <form action="/submit" method="POST">
-        {% for q in questions %}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <p class="fw-bold">{{ loop.index }}. {{ q.text }}</p>
-                <div class="form-check"><input type="radio" name="{{q.id}}" value="A" required> A. {{q.option_a}}</div>
-                <div class="form-check"><input type="radio" name="{{q.id}}" value="B"> B. {{q.option_b}}</div>
-                <div class="form-check"><input type="radio" name="{{q.id}}" value="C"> C. {{q.option_c}}</div>
-                <div class="form-check"><input type="radio" name="{{q.id}}" value="D"> D. {{q.option_d}}</div>
+<body>
+    <div class="container">
+        <h2>Online Network Security Exam</h2>
+        <hr>
+        <form action="/submit_exam" method="POST">
+            {% for q in questions %}
+            <div class="question">
+                <p><strong>{{ loop.index }}. {{ q.text }}</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="{{ q.id }}" value="A"> A. {{ q.option_a }}</label>
+                    <label><input type="radio" name="{{ q.id }}" value="B"> B. {{ q.option_b }}</label>
+                    <label><input type="radio" name="{{ q.id }}" value="C"> C. {{ q.option_c }}</label>
+                    <label><input type="radio" name="{{ q.id }}" value="D"> D. {{ q.option_d }}</label>
+                </div>
             </div>
-        </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary w-100 btn-lg mb-5">Submit Exam</button>
-    </form>
-</div>
+            {% endfor %}
+            <button type="submit">Submit Exam</button>
+        </form>
+    </div>
 </body>
 </html>
