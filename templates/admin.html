@@ -3,28 +3,27 @@
 <head>
     <title>Admin Panel - Results</title>
     <style>
-        table { width: 80%; border-collapse: collapse; margin: 20px auto; }
+        table { width: 80%; border-collapse: collapse; margin: 20px auto; font-family: Arial; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #007bff; color: white; }
-        h2 { text-align: center; }
     </style>
 </head>
 <body>
-    <h2>Student Exam Results</h2>
+    <h2 style="text-align: center;">Student Exam Results</h2>
     <table>
         <tr>
             <th>ID</th>
             <th>Student Name</th>
-            <th>Score (%)</th>
+            <th>Score (Out of 6)</th>
         </tr>
         {% for s in students %}
         <tr>
             <td>{{ s.id }}</td>
             <td>{{ s.username }}</td>
-            <td>{{ s.score }}</td>
+            <td>{{ s.score }} / 6</td>
         </tr>
         {% endfor %}
     </table>
-    <div style="text-align: center;"><a href="/">Logout</a></div>
+    <div style="text-align: center;"><a href="/logout">Logout</a></div>
 </body>
 </html>
