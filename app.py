@@ -9,8 +9,7 @@ import base64
 app = Flask(__name__)
 app.secret_key = 'amu_final_2026'
 
-# --- ዳታቤዝ ግንኙነት (Render PostgreSQL) ---
-# ምስሉ ላይ ያለውን External URL እዚህ ጋር ተክቼዋለሁ
+# --- ዳታቤዝ ግንኙነት (SQLite for simplicity on Render Free Tier) ---
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -29,7 +28,7 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(50))
-    mfa_secret = db.Column(db.String(32)) # ለ 2FA የሚሆን ሚስጥር
+    mfa_secret = db.Column(db.String(32))
 
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,15 +37,26 @@ class Result(db.Model):
     total = db.Column(db.Integer)
     percentage = db.Column(db.Float)
 
-# ዳታቤዝ መፍጠር እና የመጀመሪያ ዳታ ማስገባት
-with app.app_context():
+# ዳታቤዝ ለመፍጠር እና ተማሪዎችን ለመመዝገብ የምንጠቀምበት አዲስ መንገድ
+@app.route('/init_db')
+def init_db():
     db.create_all()
-    if not Student.query.first():
-        # እዚህ ጋር ለተማሪዎቹ የ 2FA ሚስጥር (MFA Secret) አብሮ ይፈጠራል
-        students = [Student(username=u, password='123', mfa_secret=pyotp.random_base32()) for u in ['mesfin', 'chere', 'solomon', 'abdi''beza']]
-        db.session.bulk_save_objects(students)
-        db.session.commit()
-
+    
+    # የተማሪዎች ዝርዝር
+    student_list = [
+        {'u': 'mesfin', 's': 'MESFIN2FASECRET1'},
+        {'u': 'chere', 's': 'CHERE2FASECRET2'},
+        {'u': 'solomon', 's': 'SOLOMON2FASECRET3'},
+        {'u': 'abdi', 's': 'ABDI2FASECRET4'},
+        {'u': 'bezaye', 's': 'BEZAYE2FASECRET5'}
+    ]
+    
+    for item in student_list:
+        if not Student.query.filter_by(username=item['u']).first():
+            new_student = Student(username=item['u'], password='123', mfa_secret=item['s'])
+            db.session.add(new_student)
+    
+    # ጥያቄዎችን መመዝገብ
     if not Question.query.first():
         qs = [
             Question(text="Which layer is responsible for routing?", option_a="Data Link", option_b="Network", option_c="Transport", option_d="Physical", correct_answer="B"),
@@ -57,14 +67,16 @@ with app.app_context():
             Question(text="What is the 1st layer of the OSI model?", option_a="Physical", option_b="Data Link", option_c="Network", option_d="Application", correct_answer="A")
         ]
         db.session.bulk_save_objects(qs)
-        db.session.commit()
+    
+    db.session.commit()
+    return "Database initialized with Abdi, Bezaye, Chere, Solomon, and Mesfin!"
 
 # --- Routes ---
 
 @app.route('/')
-def index(): return render_template('login.html')
+def index(): 
+    return render_template('login.html')
 
-# 1. አዲስ፡ ለተማሪው QR Code ማሳያ ገጽ
 @app.route('/setup_2fa/<username>')
 def setup_2fa(username):
     student = Student.query.filter_by(username=username).first()
@@ -82,11 +94,10 @@ def login():
     u, p = request.form.get('username'), request.form.get('password')
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
-        session['temp_user'] = u # ለጊዜው ተጠቃሚውን መመዝገብ
-        return redirect(url_for('verify_otp')) # ወደ 2FA ማረጋገጫ ይሄዳል
+        session['temp_user'] = u
+        return redirect(url_for('verify_otp'))
     return "Invalid! <a href='/'>Try again</a>"
 
-# 2. አዲስ፡ የ 2FA ኮድ ማረጋገጫ ገጽ
 @app.route('/verify_otp', methods=['GET', 'POST'])
 def verify_otp():
     if 'temp_user' not in session: return redirect(url_for('index'))
@@ -133,4 +144,6 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all() # አፕሊኬሽኑ ሲነሳ ዳታቤዙን በራሱ ይፈጥራል
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
