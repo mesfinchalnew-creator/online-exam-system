@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify 2FA - Security Check</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .verify-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; width: 350px; }
+        h2 { color: #1a3a5f; margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 5px; font-size: 1.2em; text-align: center; letter-spacing: 5px; }
+        .submit-btn { background-color: #3498db; color: white; border: none; padding: 15px; width: 100%; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: bold; }
+        .submit-btn:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+    <div class="verify-box">
+        <h2>Security Verification</h2>
+        <p>Enter the 6-digit code from your Authenticator app.</p>
+        
+        <form action="/verify_otp" method="POST">
+            <input type="text" name="otp" placeholder="000000" maxlength="6" required autofocus>
+            <button type="submit" class="submit-btn">Verify & Start Exam</button>
+        </form>
+    </div>
+</body>
+</html>
