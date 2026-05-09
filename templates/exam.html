@@ -2,20 +2,34 @@
 <html>
 <head>
     <title>Online Exam</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+        .nav { text-align: right; margin-bottom: 20px; }
+        .logout-btn { background: #dc3545; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .question { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .submit-btn { background: #28a745; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
 </head>
-<body style="font-family: Arial; padding: 20px;">
-    <h2>AMU Online Exam</h2>
-    <form action="/submit_exam" method="POST">
-        {% for q in questions %}
-        <div style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <p><strong>{{ loop.index }}. {{ q.text }}</strong></p>
-            <label><input type="radio" name="{{ q.id }}" value="A"> A. {{ q.option_a }}</label><br>
-            <label><input type="radio" name="{{ q.id }}" value="B"> B. {{ q.option_b }}</label><br>
-            <label><input type="radio" name="{{ q.id }}" value="C"> C. {{ q.option_c }}</label><br>
-            <label><input type="radio" name="{{ q.id }}" value="D"> D. {{ q.option_d }}</label>
-        </div>
-        {% endfor %}
-        <button type="submit" style="background: green; color: white; padding: 10px 20px;">Submit Exam</button>
-    </form>
+<body>
+    <div class="nav">
+        <span>User: {{ session['user'] }}</span> | 
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+    <div class="container">
+        <h2>Networking Security Exam</h2>
+        <form action="/submit_exam" method="POST">
+            {% for q in questions %}
+            <div class="question">
+                <p><strong>{{ loop.index }}. {{ q.text }}</strong></p>
+                <label><input type="radio" name="{{ q.id }}" value="A"> A. {{ q.option_a }}</label><br>
+                <label><input type="radio" name="{{ q.id }}" value="B"> B. {{ q.option_b }}</label><br>
+                <label><input type="radio" name="{{ q.id }}" value="C"> C. {{ q.option_c }}</label><br>
+                <label><input type="radio" name="{{ q.id }}" value="D"> D. {{ q.option_d }}</label>
+            </div>
+            {% endfor %}
+            <button type="submit" class="submit-btn">Submit Exam</button>
+        </form>
+    </div>
 </body>
 </html>
