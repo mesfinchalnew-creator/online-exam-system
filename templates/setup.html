@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2FA Setup - Arba Minch University</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; text-align: center; padding-top: 50px; }
+        .setup-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: inline-block; max-width: 400px; }
+        h2 { color: #1a3a5f; }
+        .qr-border { border: 5px solid #1a3a5f; padding: 10px; margin: 20px 0; display: inline-block; }
+        .btn { background-color: #2ecc71; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-weight: bold; }
+        .instruction { text-align: left; font-size: 0.9em; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="setup-card">
+        <h2>Set Up 2FA</h2>
+        <p>Student: <strong>{{ username }}</strong></p>
+        
+        <div class="qr-border">
+            <img src="data:image/png;base64,{{ qr_image }}" alt="QR Code">
+        </div>
+
+        <div class="instruction">
+            <p><strong>Instructions:</strong></p>
+            <ol>
+                <li>Open <b>Google Authenticator</b> on your phone.</li>
+                <li>Tap the "+" icon and choose <b>Scan a QR code</b>.</li>
+                <li>Scan the image above.</li>
+            </ol>
+        </div>
+        <br>
+        <a href="{{ url_for('index') }}" class="btn">Go to Login</a>
+    </div>
+</body>
+</html>
