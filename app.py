@@ -55,18 +55,17 @@ def login():
     
     student = Student.query.filter_by(username=u, password=p).first()
     if student:
-        session['temp_user'] = u # ለጊዜው እዚህ እናቆየው
-        return redirect(url_for('verify_2fa')) # ወደ 2FA ገጽ ይሂድ
+        session['temp_user'] 
+        return redirect(url_for('verify_2fa')) 
     return "Invalid! <a href='/'>Try Again</a>"
 
-# --- አዲሱ የ 2FA ማረጋገጫ ገጽ ---
 @app.route('/verify_2fa', methods=['GET', 'POST'])
 def verify_2fa():
     if 'temp_user' not in session: return redirect(url_for('index'))
     
     if request.method == 'POST':
         otp = request.form.get('otp')
-        if otp == '123456': # ለዲሞ የተቀመጠ ኮድ
+        if otp == '123456':
             session['user'] = session.pop('temp_user')
             return redirect(url_for('exam'))
         else:
