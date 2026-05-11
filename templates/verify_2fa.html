@@ -2,25 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Verify 2FA - Security Check</title>
+    <title>Verify 2FA - AMU Security Check</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .verify-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; width: 350px; }
-        h2 { color: #1a3a5f; margin-bottom: 20px; }
-        input[type="text"] { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 5px; font-size: 1.2em; text-align: center; letter-spacing: 5px; }
-        .submit-btn { background-color: #3498db; color: white; border: none; padding: 15px; width: 100%; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: bold; }
-        .submit-btn:hover { background-color: #2980b9; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .verify-box { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            text-align: center; 
+            width: 380px; 
+        }
+        h2 { color: #1e3a8a; margin-bottom: 10px; font-weight: 800; }
+        p { color: #666; font-size: 14px; line-height: 1.6; }
+        
+        input[type="text"] { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 25px 0; 
+            border: 2px solid #e1e4e8; 
+            border-radius: 8px; 
+            font-size: 1.5em; 
+            text-align: center; 
+            letter-spacing: 8px; 
+            font-weight: bold;
+            color: #1e3a8a;
+            background: #f8fafc;
+        }
+        input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+        
+        .submit-btn { 
+            background-color: #1e3a8a; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            width: 100%; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 1.1em; 
+            font-weight: bold; 
+            transition: 0.3s;
+        }
+        .submit-btn:hover { 
+            background-color: #152c66; 
+            transform: translateY(-2px);
+        }
+        .footer-note { font-size: 11px; color: #999; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="verify-box">
-        <h2>Security Verification</h2>
-        <p>Enter the 6-digit code from your Authenticator app.</p>
+        <h2>2-Step Verification</h2>
+        <p>Protecting your account. Enter the 6-digit code from your <strong>Google Authenticator</strong> app.</p>
         
-        <form action="/verify_otp" method="POST">
-            <input type="text" name="otp" placeholder="000000" maxlength="6" required autofocus>
+        <form action="/verify_2fa" method="POST">
+            <input type="text" name="2fa_code" placeholder="000000" maxlength="6" required autofocus autocomplete="off">
             <button type="submit" class="submit-btn">Verify & Start Exam</button>
         </form>
+        
+        <div class="footer-note">
+            Faculty of Computing & Software Engineering<br>
+            Arba Minch University
+        </div>
     </div>
 </body>
 </html>
