@@ -1,19 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
+import pyotp  # 2FA ኮድ ለማመንጨት (ይህንን 'pip install pyotp' ብለህ መጫን አለብህ)
 
 app = Flask(__name__)
 app.secret_key = 'amu_exam_secure_key_2026'
 
-# Render ላይ ዳታቤዙ እንዲሰራ አቃፊውን እና መንገዱን ማስተካከል
+# Render ላይ ዳታቤዙ እንዲሰራ አቃፊውን ማስተካከል
 basedir = os.path.abspath(os.path.dirname(__file__))
-# ዳታቤዙ የሚቀመጥበትን instance ፎልደር መኖሩን ማረጋገጥ
 if not os.path.exists(os.path.join(basedir, 'instance')):
     os.makedirs(os.path.join(basedir, 'instance'))
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'exam_data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# ለሁሉም ተማሪዎች አንድ አይነት ምስጢራዊ ቁልፍ ለሙከራ እንጠቀም
+# (በእውነተኛ ሲስተም ለእያንዳንዱ ተማሪ የተለያየ ቁልፍ ይሰጣል)
+SHARED_2FA_SECRET = "JBSWY3DPEHPK3PXP" 
 
 # Student model
 class Student(db.Model):
@@ -36,12 +40,9 @@ class Question(db.Model):
 def init_db():
     db.drop_all() 
     db.create_all() 
-    
-    # ተማሪዎችን መመዝገብ
     for name in ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']:
         db.session.add(Student(username=name, password='123'))
     
-    # ጥያቄዎችን መመዝገብ
     qs = [
         Question(text="OSI model layer for routing?", option_a="Physical", option_b="Network", option_c="Transport", option_d="Data Link", correct_answer="B"),
         Question(text="Port for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
@@ -52,7 +53,7 @@ def init_db():
     ]
     db.session.add_all(qs)
     db.session.commit()
-    return "SUCCESS: Database is ready and clean!"
+    return "SUCCESS: Database is ready with 2FA setup!"
 
 @app.route('/')
 def index(): return render_template('login.html')
@@ -60,15 +61,30 @@ def index(): return render_template('login.html')
 @app.route('/login', methods=['POST'])
 def login():
     u, p = request.form.get('username'), request.form.get('password')
-    if u == 'admin' and p == 'admin123':
-        session['user'] = 'admin'
-        return redirect(url_for('admin_panel'))
-    
     user_rec = Student.query.filter_by(username=u, password=p).first()
+    
     if user_rec:
-        session['user'] = u
-        return redirect(url_for('exam'))
+        # ፓስወርድ ልክ ከሆነ በቀጥታ ወደ ፈተና ከመሄድ ይልቅ 2FA እንዲያልፍ እናደርጋለን
+        session['temp_user'] = u 
+        return redirect(url_for('verify_2fa'))
     return "Invalid credentials! <a href='/'>Go back</a>"
+
+# --- አዲሱ የ 2FA ማረጋገጫ ክፍል ---
+@app.route('/verify_2fa', methods=['GET', 'POST'])
+def verify_2fa():
+    if 'temp_user' not in session: return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        user_code = request.form.get('2fa_code')
+        totp = pyotp.TOTP(SHARED_2FA_SECRET)
+        
+        if totp.verify(user_code): # ኮዱ ልክ ከሆነ
+            session['user'] = session.pop('temp_user')
+            return redirect(url_for('exam'))
+        else:
+            return "Invalid 2FA Code! <a href='/verify_2fa'>Try again</a>"
+            
+    return render_template('verify_2fa.html')
 
 @app.route('/exam')
 def exam():
@@ -78,28 +94,17 @@ def exam():
 @app.route('/submit_exam', methods=['POST'])
 def submit_exam():
     if 'user' not in session: return redirect(url_for('index'))
-    
     questions = Question.query.all()
     score = 0
-    
     for q in questions:
-        # በ exam.html ውስጥ ስሙ 'q' ስላለው እዚህም 'q' እንላለን
         user_answer = request.form.get(f'q{q.id}')
-        if user_answer == q.correct_answer:
-            score += 1
+        if user_answer == q.correct_answer: score += 1
     
     user_rec = Student.query.filter_by(username=session['user']).first()
     if user_rec:
         user_rec.score = score
         db.session.commit()
-    
-    # ውጤቱን ወደ success.html መላክ
     return render_template('success.html', score=score, total=len(questions))
-
-@app.route('/admin')
-def admin_panel():
-    if session.get('user') != 'admin': return "Access Denied!"
-    return render_template('admin.html', students=Student.query.all())
 
 @app.route('/logout')
 def logout():
@@ -107,5 +112,4 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # ለ Render የሚያስፈልግ የፖርት አወቃቀር
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
