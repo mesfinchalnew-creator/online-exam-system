@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS  # ለ Chrome Extension አስፈላጊ ነው
 import os
-import pyotp  # 2FA ኮድ ለማመንጨት (ይህንን 'pip install pyotp' ብለህ መጫን አለብህ)
+import pyotp
 
 app = Flask(__name__)
 app.secret_key = 'amu_exam_secure_key_2026'
