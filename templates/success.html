@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Completed</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-color: #f8f9fa; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .container { 
+            background: #ffffff; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            text-align: center; 
+            width: 90%; 
+            max-width: 450px; 
+        }
+        h2 { color: #2ecc71; margin-bottom: 15px; }
+        p { color: #555; font-size: 1.1rem; }
+        .score { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #3498db; 
+            margin: 20px 0; 
+            padding: 10px; 
+            background: #eef7ff; 
+            border-radius: 8px; 
+        }
+        .footer-note { font-size: 13px; color: #888; margin-top: 20px; }
+        .logout-link { 
+            display: inline-block; 
+            margin-top: 25px; 
+            padding: 12px 25px; 
+            background-color: #e74c3c; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+        }
+        .logout-link:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Congratulations!</h2>
+        <p>You have successfully completed the online examination.</p>
+        
+        <div class="score">
+            Your Score: 4 / 6
+        </div>
+        
+        <hr style="border: 0; border-top: 1px solid #eee;">
+        <p class="footer-note">Your results have been securely transmitted to the department database.</p>
+        
+        <a href="/logout" class="logout-link">Exit System</a>
+    </div>
+</body>
+</html>
