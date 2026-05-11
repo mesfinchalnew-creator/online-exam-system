@@ -6,7 +6,6 @@ import pyotp  # 2FA ኮድ ለማመንጨት (ይህንን 'pip install pyotp' 
 app = Flask(__name__)
 app.secret_key = 'amu_exam_secure_key_2026'
 
-# Render ላይ ዳታቤዙ እንዲሰራ አቃፊውን ማስተካከል
 basedir = os.path.abspath(os.path.dirname(__file__))
 if not os.path.exists(os.path.join(basedir, 'instance')):
     os.makedirs(os.path.join(basedir, 'instance'))
@@ -15,8 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'in
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# ለሁሉም ተማሪዎች አንድ አይነት ምስጢራዊ ቁልፍ ለሙከራ እንጠቀም
-# (በእውነተኛ ሲስተም ለእያንዳንዱ ተማሪ የተለያየ ቁልፍ ይሰጣል)
 SHARED_2FA_SECRET = "JBSWY3DPEHPK3PXP" 
 
 # Student model
