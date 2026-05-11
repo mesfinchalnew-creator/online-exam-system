@@ -5,8 +5,13 @@ import os
 app = Flask(__name__)
 app.secret_key = 'amu_exam_secure_key_2026'
 
-# Database set-up
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam_data.sqlite'
+# Render ላይ ዳታቤዙ እንዲሰራ አቃፊውን እና መንገዱን ማስተካከል
+basedir = os.path.abspath(os.path.dirname(__file__))
+# ዳታቤዙ የሚቀመጥበትን instance ፎልደር መኖሩን ማረጋገጥ
+if not os.path.exists(os.path.join(basedir, 'instance')):
+    os.makedirs(os.path.join(basedir, 'instance'))
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'exam_data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -32,9 +37,11 @@ def init_db():
     db.drop_all() 
     db.create_all() 
     
+    # ተማሪዎችን መመዝገብ
     for name in ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']:
         db.session.add(Student(username=name, password='123'))
     
+    # ጥያቄዎችን መመዝገብ
     qs = [
         Question(text="OSI model layer for routing?", option_a="Physical", option_b="Network", option_c="Transport", option_d="Data Link", correct_answer="B"),
         Question(text="Port for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
@@ -68,7 +75,6 @@ def exam():
     if 'user' not in session: return redirect(url_for('index'))
     return render_template('exam.html', questions=Question.query.all())
 
-# --- እዚህ ጋር ነው ውጤቱ እንዲሰላ የተደረገው ---
 @app.route('/submit_exam', methods=['POST'])
 def submit_exam():
     if 'user' not in session: return redirect(url_for('index'))
@@ -76,8 +82,8 @@ def submit_exam():
     questions = Question.query.all()
     score = 0
     
-    # እያንዳንዱን የተማሪ መልስ ከዳታቤዙ ጋር ማወዳደር
     for q in questions:
+        # በ exam.html ውስጥ ስሙ 'q' ስላለው እዚህም 'q' እንላለን
         user_answer = request.form.get(f'q{q.id}')
         if user_answer == q.correct_answer:
             score += 1
@@ -87,7 +93,7 @@ def submit_exam():
         user_rec.score = score
         db.session.commit()
     
-    # ውጤቱን ወደ ገጹ መላክ
+    # ውጤቱን ወደ success.html መላክ
     return render_template('success.html', score=score, total=len(questions))
 
 @app.route('/admin')
@@ -101,4 +107,5 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    # ለ Render የሚያስፈልግ የፖርት አወቃቀር
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
