@@ -8,9 +8,9 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* አዲሱን ምስል እዚህ ጋር በትክክል እናስገባለን */
-            background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)), 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* የተፈጥሮ ምስሉን እንደ ዳራ ለመጠቀም */
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), 
                         url("{{ url_for('static', filename='nature_bg.jpg') }}") no-repeat center center fixed;
             background-size: cover;
             display: flex;
@@ -20,37 +20,54 @@
             min-height: 100vh;
         }
 
-        .header-bg {
-            background: rgba(30, 58, 138, 0.7);
-            padding: 10px 40px;
-            border-radius: 50px;
-            margin-bottom: 20px;
+        /* የጠፋው ዋና ጽሁፍ እዚህ ጋር ተስተካክሏል */
+        .main-title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(30, 58, 138, 0.85); /* ጥቁር ሰማያዊ ዳራ ጽሁፉ እንዲታይ */
+            padding: 20px 40px;
+            border-radius: 20px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .header-bg h1 { color: white; margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
-        .header-bg p { color: #ffd700; margin: 0; font-size: 14px; font-weight: bold; text-align: center; }
+        .main-title-container h1 { 
+            font-size: 26px; 
+            color: white; 
+            margin: 0; 
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
 
-        .main-layout {
+        .main-title-container p { 
+            font-size: 16px; 
+            color: #ffd700; 
+            margin: 5px 0 0 0;
+            font-weight: 600;
+        }
+
+        .main-content {
             display: flex;
+            gap: 25px;
             align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .login-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+        .login-card {
+            background: rgba(255, 255, 255, 0.15);
             padding: 40px;
             border-radius: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
             width: 350px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
 
-        .logo-area {
+        .logo-circle {
             width: 90px;
             height: 90px;
             background: white;
@@ -60,10 +77,10 @@
             justify-content: center;
             margin-bottom: 20px;
         }
-        .logo-area img { width: 75px; }
-
-        h2 { color: white; margin: 0; font-size: 22px; font-weight: 900; }
-        .tagline { color: #ffd700; font-size: 12px; margin-bottom: 25px; font-weight: bold; }
+        .logo-circle img { width: 75px; }
+        
+        .login-card h2 { color: white; margin: 0; font-size: 22px; font-weight: bold; }
+        .login-card .sub-text { color: #ffd700; margin-bottom: 25px; font-size: 13px; font-weight: bold; }
 
         input {
             width: 100%;
@@ -71,68 +88,69 @@
             margin: 10px 0;
             border-radius: 12px;
             border: none;
-            background: white;
-            font-size: 15px;
+            background: rgba(255, 255, 255, 0.95);
             box-sizing: border-box;
+            font-size: 15px;
         }
 
-        .btn-access {
+        .login-btn {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: #1e3a8a;
             color: white;
             border: none;
             border-radius: 12px;
-            font-weight: 800;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
             margin-top: 15px;
             transition: 0.3s;
         }
-        .btn-access:hover { background: #2563eb; transform: translateY(-3px); }
+        .login-btn:hover { background: #2563eb; transform: scale(1.03); }
 
-        .side-info {
-            background: white;
+        .info-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e3a8a;
             padding: 20px;
             border-radius: 20px;
-            width: 160px;
+            width: 150px;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        .side-info i { font-size: 30px; color: #1e3a8a; margin-bottom: 10px; display: block; }
-        .side-info span { font-size: 13px; font-weight: bold; color: #333; }
+        .info-box i { font-size: 28px; margin-bottom: 10px; display: block; }
+        .info-box span { font-size: 13px; font-weight: bold; }
 
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="header-bg">
+    <div class="main-title-container">
         <h1>Arba Minch University</h1>
-        <p>Institute of Technology</p>
+        <p>Student Online Exam System</p>
     </div>
 
-    <div class="main-layout">
-        <div class="side-info">
-            <i class="fas fa-user-shield"></i>
+    <div class="main-content">
+        <div class="info-box">
+            <i class="fas fa-user-lock"></i>
             <span>Secure Access Control</span>
         </div>
 
-        <div class="login-box">
-            <div class="logo-area">
+        <div class="login-card">
+            <div class="logo-circle">
                 <img src="{{ url_for('static', filename='logo.png') }}" alt="AMU Logo">
             </div>
             <h2>STUDENT LOGIN</h2>
-            <div class="tagline">ONLINE EXAMINATION SYSTEM</div>
-            
+            <div class="sub-text">FACULTY OF COMPUTING & SE</div>
             <form action="/login" method="POST">
                 <input type="text" name="username" placeholder="Student ID / Username" required>
                 <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" class="btn-access">ACCESS EXAM</button>
+                <button type="submit" class="login-btn">ACCESS EXAM</button>
             </form>
         </div>
 
-        <div class="side-info">
-            <i class="fas fa-book-reader"></i>
+        <div class="info-box">
+            <i class="fas fa-laptop-code"></i>
             <span>CNS-611 Exam Portal</span>
         </div>
     </div>
