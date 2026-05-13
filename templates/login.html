@@ -8,10 +8,10 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', sans-serif;
-            /* ምስሉ ጥርት ብሎ እንዲታይ background-size: cover እና ዝቅተኛ opacity ተጠቅሜያለሁ */
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                        url("{{ url_for('static', filename='background_new.jpg') }}") no-repeat center center fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* አዲሱን የሀውልት ምስል እዚህ እንጠቀማለን */
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), 
+                        url("{{ url_for('static', filename='monument.jpg') }}") no-repeat center center fixed;
             background-size: cover;
             display: flex;
             flex-direction: column;
@@ -22,73 +22,86 @@
 
         .header-section {
             text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); /* ጽሁፉ በምስሉ ላይ ጎልቶ እንዲታይ */
+            margin-bottom: 40px;
+            z-index: 2;
         }
 
-        .header-section h1 { font-size: 32px; color: white; margin: 10px 0; font-weight: 800; }
-        .header-section p { font-size: 18px; color: #ffd700; font-weight: 600; }
+        .header-section h1 { 
+            font-size: 34px; 
+            color: white; 
+            margin: 10px 0; 
+            font-weight: 800;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.8);
+        }
+
+        .header-section p { 
+            font-size: 18px; 
+            color: #ffd700; 
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
         .main-container {
             display: flex;
-            gap: 25px;
+            gap: 30px;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
             padding: 20px;
             width: 100%;
+            z-index: 2;
         }
 
-        /* የመረጃ ካርዶች - ምስሉን እንዳይሸፍኑ በከፊል ግልጽ ተደርገዋል */
+        /* የመረጃ ካርዶች */
         .info-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             color: #1e3a8a;
             padding: 25px;
             border-radius: 20px;
-            width: 200px;
+            width: 180px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            border-bottom: 5px solid #1e3a8a;
             transition: 0.3s;
-            border: 2px solid #1e3a8a;
         }
         .info-card i { font-size: 35px; margin-bottom: 15px; display: block; }
-        .info-card h4 { font-size: 15px; margin: 0; font-weight: 700; }
+        .info-card h4 { font-size: 14px; margin: 0; font-weight: 700; }
 
-        /* የሎግኢን ካርድ - ጥርት ያለ ጥቁር ዳራ */
+        /* የሎግኢን ካርድ */
         .login-card {
-            background: rgba(30, 30, 30, 0.95);
+            background: rgba(25, 25, 25, 0.92);
             padding: 40px;
             border-radius: 30px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
             width: 360px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .amu-logo-circle {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             background: white;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            padding: 5px;
         }
-
-        .amu-logo-circle img { width: 80px; }
+        .amu-logo-circle img { width: 75px; }
         
-        h2 { color: white; margin: 0; font-size: 24px; letter-spacing: 1px; }
-        .sub-title { color: #ffd700; margin-bottom: 30px; font-size: 13px; font-weight: bold; }
+        h2 { color: white; margin: 0; font-size: 22px; font-weight: 800; }
+        .sub-title { color: #ffd700; margin-bottom: 25px; font-size: 12px; font-weight: bold; }
 
         input {
             width: 100%;
-            padding: 16px;
-            margin: 12px 0;
+            padding: 15px;
+            margin: 10px 0;
             border-radius: 12px;
-            border: 1px solid #ddd;
-            background: #fff;
+            border: none;
+            background: #f8fafc;
             box-sizing: border-box;
             font-size: 16px;
         }
@@ -102,11 +115,10 @@
             border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 18px;
-            margin-top: 15px;
-            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+            font-size: 17px;
+            margin-top: 10px;
         }
-        button:hover { background: #2563eb; transform: translateY(-3px); }
+        button:hover { background: #2563eb; transform: translateY(-2px); }
 
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -120,13 +132,13 @@
 
     <div class="main-container">
         <div class="info-card">
-            <i class="fas fa-user-check"></i>
-            <h4>Verify Identity<br>(2FA Setup)</h4>
+            <i class="fas fa-id-card-alt"></i>
+            <h4>Verify Identity (2FA Setup)</h4>
         </div>
 
         <div class="login-card">
             <div class="amu-logo-circle">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="AMU Logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
             </div>
             <h2>AMU PORTAL LOGIN</h2>
             <div class="sub-title">ONLINE EXAMINATION SYSTEM</div>
@@ -138,8 +150,13 @@
         </div>
 
         <div class="info-card">
-            <i class="fas fa-laptop-code"></i>
-            <h4>View/Take<br>CNS-611 Exam</h4>
+            <i class="fas fa-file-alt"></i>
+            <h4>View/Take CNS-611 Final Exam</h4>
+        </div>
+
+        <div class="info-card">
+            <i class="fas fa-university"></i>
+            <h4>Access "FCSE" Exam Guide</h4>
         </div>
     </div>
 
