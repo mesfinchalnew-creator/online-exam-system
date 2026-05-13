@@ -8,7 +8,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* ምስሉን በቀጥታ ከውጪ ሊንክ እንዲያነበው አድርጌዋለሁ */
+            /* አስተማማኝ የምስል ሊንክ ተተክቷል */
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
                         url("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Arba_Minch_University_Main_Gate.jpg/1200px-Arba_Minch_University_Main_Gate.jpg") no-repeat center center fixed;
             background-size: cover;
@@ -19,65 +19,71 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
+            background: rgba(45, 45, 45, 0.85); /* ምስሉ ባይመጣ እንኳ ካርዱ እንዲታይ */
+            backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             width: 380px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .amu-logo { width: 80px; margin-bottom: 10px; }
+        .amu-logo { width: 85px; margin-bottom: 15px; }
         
-        h2 { color: white; margin: 0; font-weight: 800; font-size: 22px; }
-        .sub-title { color: #ffd700; margin-bottom: 25px; font-size: 14px; font-weight: bold; }
+        h2 { color: white; margin: 0; font-weight: 800; font-size: 24px; letter-spacing: 1px; }
+        .sub-title { color: #ffd700; margin-bottom: 30px; font-size: 14px; font-weight: bold; text-transform: uppercase; }
 
         input {
             width: 100%;
             padding: 14px;
-            margin: 10px 0;
+            margin: 12px 0;
             border-radius: 8px;
             border: none;
-            background: rgba(255, 255, 255, 0.9);
+            background: #f1f5f9;
             box-sizing: border-box;
+            font-size: 16px;
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: #1e3a8a;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 17px;
             margin-top: 10px;
+            transition: 0.3s;
         }
 
-        button:hover { background: #2563eb; }
+        button:hover { background: #2563eb; transform: scale(1.02); }
 
         .footer-text {
-            color: white;
+            color: #cbd5e1;
             font-size: 12px;
-            margin-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding-top: 15px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <div class="login-card">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Arba_Minch_University_logo.png/220px-Arba_Minch_University_logo.png" class="amu-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Arba_Minch_University_logo.png/220px-Arba_Minch_University_logo.png" class="amu-logo" alt="AMU Logo">
+        
         <h2>AMU PORTAL LOGIN</h2>
         <div class="sub-title">ONLINE EXAMINATION SYSTEM</div>
+        
         <form action="/login" method="POST">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">ACCESS EXAM</button>
         </form>
+        
         <div class="footer-text">
             Arba Minch University<br>
             Institute of Technology<br>
