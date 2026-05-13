@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel - Results</title>
+    <title>AMU Exam - Admin</title>
     <style>
-        table { width: 80%; border-collapse: collapse; margin: 20px auto; font-family: Arial; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #007bff; color: white; }
+        body { font-family: Arial; padding: 20px; background-color: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        input { width: 90%; padding: 5px; margin: 5px 0; }
+        button { background: #007bff; color: white; border: none; padding: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h2 style="text-align: center;">Student Exam Results</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Student Name</th>
-            <th>Score (Out of 6)</th>
-        </tr>
-        {% for s in students %}
-        <tr>
-            <td>{{ s.id }}</td>
-            <td>{{ s.username }}</td>
-            <td>{{ s.score }} / 6</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <div style="text-align: center;"><a href="/logout">Logout</a></div>
+    <h2>Admin Dashboard - Arba Minch University</h2>
+    <a href="/logout">Logout</a>
+
+    <div class="card">
+        <h3>Student Scores</h3>
+        <table>
+            <tr><th>Username</th><th>Latest Score</th></tr>
+            {% for s in students %}
+            <tr><td>{{ s.username }}</td><td>{{ s.score }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Add New Question</h3>
+        <form action="/admin/add_question" method="POST">
+            <input name="text" placeholder="Question Text" required><br>
+            <input name="option_a" placeholder="Option A" required><br>
+            <input name="option_b" placeholder="Option B" required><br>
+            <input name="option_c" placeholder="Option C" required><br>
+            <input name="option_d" placeholder="Option D" required><br>
+            <input name="correct" placeholder="Correct Answer (A, B, C, or D)" maxlength="1" required><br>
+            <button type="submit">Add Question</button>
+        </form>
+    </div>
 </body>
 </html>
