@@ -9,7 +9,8 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+            /* ምስሉ ጥርት ብሎ እንዲታይ background-size: cover እና ዝቅተኛ opacity ተጠቅሜያለሁ */
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
                         url("{{ url_for('static', filename='background_new.jpg') }}") no-repeat center center fixed;
             background-size: cover;
             display: flex;
@@ -17,80 +18,95 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            color: white;
         }
 
         .header-section {
             text-align: center;
             margin-bottom: 30px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); /* ጽሁፉ በምስሉ ላይ ጎልቶ እንዲታይ */
         }
 
-        .header-section h1 { font-size: 28px; margin: 10px 0; font-weight: 700; }
-        .header-section p { font-size: 16px; color: #cbd5e1; }
+        .header-section h1 { font-size: 32px; color: white; margin: 10px 0; font-weight: 800; }
+        .header-section p { font-size: 18px; color: #ffd700; font-weight: 600; }
 
         .main-container {
             display: flex;
-            gap: 20px;
-            align-items: flex-start;
-            flex-wrap: wrap;
+            gap: 25px;
+            align-items: center;
             justify-content: center;
+            flex-wrap: wrap;
             padding: 20px;
+            width: 100%;
         }
 
-        /* የመረጃ ካርዶች (Info Cards) */
+        /* የመረጃ ካርዶች - ምስሉን እንዳይሸፍኑ በከፊል ግልጽ ተደርገዋል */
         .info-card {
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            padding: 20px;
-            border-radius: 15px;
-            width: 220px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e3a8a;
+            padding: 25px;
+            border-radius: 20px;
+            width: 200px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             transition: 0.3s;
+            border: 2px solid #1e3a8a;
         }
-        .info-card:hover { transform: translateY(-5px); }
-        .info-card i { font-size: 30px; color: #1e3a8a; display: block; margin-bottom: 10px; }
-        .info-card h4 { font-size: 14px; margin: 0; line-height: 1.4; }
+        .info-card i { font-size: 35px; margin-bottom: 15px; display: block; }
+        .info-card h4 { font-size: 15px; margin: 0; font-weight: 700; }
 
-        /* የሎግኢን ካርድ */
+        /* የሎግኢን ካርድ - ጥርት ያለ ጥቁር ዳራ */
         .login-card {
-            background: rgba(45, 45, 45, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(30, 30, 30, 0.95);
             padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            width: 350px;
+            border-radius: 30px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+            width: 360px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .amu-logo { width: 90px; margin-bottom: 15px; background: white; padding: 8px; border-radius: 50%; }
+        .amu-logo-circle {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .amu-logo-circle img { width: 80px; }
         
-        h2 { color: white; margin: 0; font-size: 22px; }
-        .sub-title { color: #ffd700; margin-bottom: 25px; font-size: 12px; font-weight: bold; }
+        h2 { color: white; margin: 0; font-size: 24px; letter-spacing: 1px; }
+        .sub-title { color: #ffd700; margin-bottom: 30px; font-size: 13px; font-weight: bold; }
 
         input {
             width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: none;
-            background: #f1f5f9;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            background: #fff;
             box-sizing: border-box;
+            font-size: 16px;
         }
 
         button {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: #1e3a8a;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            font-size: 18px;
+            margin-top: 15px;
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
         }
-        button:hover { background: #2563eb; }
+        button:hover { background: #2563eb; transform: translateY(-3px); }
 
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -98,19 +114,20 @@
 <body>
 
     <div class="header-section">
-        <img src="{{ url_for('static', filename='logo.png') }}" class="amu-logo" style="width: 70px; background: none;">
         <h1>Arba Minch University Student Online Exam System</h1>
         <p>Faculty of Computing & Software Engineering</p>
     </div>
 
     <div class="main-container">
         <div class="info-card">
-            <i class="fas fa-user-shield"></i>
-            <h4>Verify Identity (2FA Setup)</h4>
+            <i class="fas fa-user-check"></i>
+            <h4>Verify Identity<br>(2FA Setup)</h4>
         </div>
 
         <div class="login-card">
-            <img src="{{ url_for('static', filename='logo.png') }}" class="amu-logo" alt="AMU Logo">
+            <div class="amu-logo-circle">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="AMU Logo">
+            </div>
             <h2>AMU PORTAL LOGIN</h2>
             <div class="sub-title">ONLINE EXAMINATION SYSTEM</div>
             <form action="/login" method="POST">
@@ -121,13 +138,8 @@
         </div>
 
         <div class="info-card">
-            <i class="fas fa-file-signature"></i>
-            <h4>View/Take CNS-611 Final Exam</h4>
-        </div>
-
-        <div class="info-card">
-            <i class="fas fa-book-open"></i>
-            <h4>Access "FCSE: AMU" Exam Guide</h4>
+            <i class="fas fa-laptop-code"></i>
+            <h4>View/Take<br>CNS-611 Exam</h4>
         </div>
     </div>
 
