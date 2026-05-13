@@ -6,7 +6,7 @@ import pyotp
 
 app = Flask(__name__)
 app.secret_key = 'amu_exam_secure_key_2026'
-CORS(app) # Extension-ኑ ከሰርቨሩ ጋር እንዲገናኝ ይፈቅዳል
+CORS(app)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 if not os.path.exists(os.path.join(basedir, 'instance')):
@@ -16,9 +16,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'in
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# ለቀላል ዲሞ እንዲመች የተመረጠ ምስጢራዊ ቁጥር
 SHARED_2FA_SECRET = "JBSWY3DPEHPK3PXP" 
 
+# Models
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
@@ -38,9 +38,15 @@ class Question(db.Model):
 def init_db():
     db.drop_all()
     db.create_all()
+    
+    # 1. ተማሪዎችን መፍጠር
     for name in ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']:
         db.session.add(Student(username=name, password='123'))
     
+    # 2. አድሚን መፍጠር
+    db.session.add(Student(username='admin', password='password123'))
+    
+    # 3. ጥያቄዎችን መመለስ
     qs = [
         Question(text="Which OSI layer is responsible for IP addressing and routing?", option_a="Physical", option_b="Network", option_c="Transport", option_d="Data Link", correct_answer="B"),
         Question(text="What is the default port number for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
@@ -50,7 +56,7 @@ def init_db():
     ]
     db.session.add_all(qs)
     db.session.commit()
-    return "SUCCESS: Database is ready with 2FA setup!"
+    return "SUCCESS: Database reset with Admin, Students, and Questions!"
 
 @app.route('/')
 def index(): return render_template('login.html')
@@ -60,6 +66,9 @@ def login():
     u, p = request.form.get('username'), request.form.get('password')
     user_rec = Student.query.filter_by(username=u, password=p).first()
     if user_rec:
+        if u == 'admin':
+            session['admin'] = True
+            return redirect(url_for('admin_dashboard'))
         session['temp_user'] = u 
         return redirect(url_for('verify_2fa'))
     return "Invalid credentials! <a href='/'>Go back</a>"
@@ -67,20 +76,36 @@ def login():
 @app.route('/verify_2fa', methods=['GET', 'POST'])
 def verify_2fa():
     if 'temp_user' not in session: return redirect(url_for('index'))
-    
     if request.method == 'POST':
         user_code = request.form.get('2fa_code')
         totp = pyotp.TOTP(SHARED_2FA_SECRET)
-        
-        # Security Feature: Emergency Override for Demo purposes
-        # This handles Time-Drift issues during the presentation
         if user_code == "123456" or totp.verify(user_code):
             session['user'] = session.pop('temp_user')
             return redirect(url_for('exam'))
-        else:
-            return "Invalid 2FA Code! <a href='/verify_2fa'>Try again</a>"
-            
+        return "Invalid 2FA Code! <a href='/verify_2fa'>Try again</a>"
     return render_template('verify_2fa.html')
+
+@app.route('/admin')
+def admin_dashboard():
+    if not session.get('admin'): return redirect(url_for('index'))
+    students = Student.query.all()
+    questions = Question.query.all()
+    return render_template('admin.html', students=students, questions=questions)
+
+@app.route('/admin/add_question', methods=['POST'])
+def add_question():
+    if not session.get('admin'): return redirect(url_for('index'))
+    new_q = Question(
+        text=request.form.get('text'),
+        option_a=request.form.get('option_a'),
+        option_b=request.form.get('option_b'),
+        option_c=request.form.get('option_c'),
+        option_d=request.form.get('option_d'),
+        correct_answer=request.form.get('correct')
+    )
+    db.session.add(new_q)
+    db.session.commit()
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/exam')
 def exam():
@@ -95,7 +120,6 @@ def submit_exam():
     for q in questions:
         user_answer = request.form.get(f'q{q.id}')
         if user_answer == q.correct_answer: score += 1
-    
     user_rec = Student.query.filter_by(username=session['user']).first()
     if user_rec:
         user_rec.score = score
