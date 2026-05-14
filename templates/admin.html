@@ -3,25 +3,37 @@
 <head>
     <title>AMU Exam - Admin</title>
     <style>
-        body { font-family: Arial; padding: 20px; background-color: #f4f4f4; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333; }
         .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        input { width: 90%; padding: 5px; margin: 5px 0; }
-        button { background: #007bff; color: white; border: none; padding: 10px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #1e3a8a; color: white; }
+        input { width: 95%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #1e3a8a; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        button:hover { background: #2563eb; }
+        .delete-btn { color: #d9534f; text-decoration: none; font-weight: bold; }
+        .delete-btn:hover { color: #c9302c; text-decoration: underline; }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a { text-decoration: none; color: #1e3a8a; font-weight: bold; }
     </style>
 </head>
 <body>
     <h2>Admin Dashboard - Arba Minch University</h2>
-    <a href="/logout">Logout</a>
+    <div class="nav-links">
+        <a href="/logout">Logout</a> | <a href="/exam">View Exam Page</a>
+    </div>
 
     <div class="card">
         <h3>Student Scores</h3>
         <table>
-            <tr><th>Username</th><th>Latest Score</th></tr>
-            {% for s in students %}
-            <tr><td>{{ s.username }}</td><td>{{ s.score }}</td></tr>
-            {% endfor %}
+            <thead>
+                <tr><th>Username</th><th>Latest Score</th></tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr><td>{{ s.username }}</td><td>{{ s.score }}</td></tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 
@@ -37,5 +49,36 @@
             <button type="submit">Add Question</button>
         </form>
     </div>
+
+    <div class="card">
+        <h3>Manage Existing Questions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Question</th>
+                    <th>Correct Ans</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in questions %}
+                <tr>
+                    <td>{{ q.id }}</td>
+                    <td>{{ q.text }}</td>
+                    <td>{{ q.correct_answer }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_question', id=q.id) }}" 
+                           class="delete-btn" 
+                           onclick="return confirm('እርግጠኛ ነህ ይህ ጥያቄ ይጥፋ?')">
+                           Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 </body>
 </html>
