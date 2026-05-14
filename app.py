@@ -38,15 +38,10 @@ class Question(db.Model):
 def init_db():
     db.drop_all()
     db.create_all()
-    
-    # 1. ተማሪዎችን መፍጠር
     for name in ['abdi', 'bezaye', 'mesfin', 'chere', 'solomon']:
         db.session.add(Student(username=name, password='123'))
-    
-    # 2. አድሚን መፍጠር
     db.session.add(Student(username='admin', password='password123'))
     
-    # 3. ጥያቄዎችን መመለስ
     qs = [
         Question(text="Which OSI layer is responsible for IP addressing and routing?", option_a="Physical", option_b="Network", option_c="Transport", option_d="Data Link", correct_answer="B"),
         Question(text="What is the default port number for HTTP?", option_a="21", option_b="25", option_c="80", option_d="443", correct_answer="C"),
@@ -105,6 +100,16 @@ def add_question():
     )
     db.session.add(new_q)
     db.session.commit()
+    return redirect(url_for('admin_dashboard'))
+
+# አዲሱ ጥያቄዎችን ማጥፊያ ኮድ (ይህንን ጨምሬያለሁ)
+@app.route('/admin/delete_question/<int:id>')
+def delete_question(id):
+    if not session.get('admin'): return redirect(url_for('index'))
+    q_to_delete = Question.query.get(id)
+    if q_to_delete:
+        db.session.delete(q_to_delete)
+        db.session.commit()
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/exam')
